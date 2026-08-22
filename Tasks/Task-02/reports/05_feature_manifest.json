@@ -1,0 +1,62 @@
+{
+  "fit_split": "train only",
+  "numeric_features": [
+    "customer_zip_code_prefix",
+    "item_count",
+    "product_count",
+    "seller_count",
+    "price_total",
+    "price_mean",
+    "freight_total",
+    "freight_mean",
+    "product_weight_mean",
+    "product_length_mean",
+    "product_height_mean",
+    "product_width_mean",
+    "product_photos_mean",
+    "seller_lat_mean",
+    "seller_lng_mean",
+    "seller_state_nunique",
+    "payment_count",
+    "payment_value_total",
+    "payment_installments_max",
+    "payment_type_count",
+    "customer_lat",
+    "customer_lng",
+    "customer_seller_distance_km",
+    "purchase_month",
+    "purchase_day_of_week",
+    "purchase_hour",
+    "purchase_is_weekend",
+    "estimated_delivery_days"
+  ],
+  "categorical_features": [
+    "customer_state",
+    "primary_seller_state",
+    "primary_category",
+    "dominant_payment_type"
+  ],
+  "output_feature_count": 157,
+  "matrix_shapes": {
+    "train": [
+      67529,
+      157
+    ],
+    "validation": [
+      14470,
+      157
+    ],
+    "test": [
+      14471,
+      157
+    ]
+  },
+  "leakage_columns_excluded": [
+    "order_status",
+    "order_approved_at",
+    "order_delivered_carrier_date",
+    "order_delivered_customer_date",
+    "delivery_delay_days",
+    "reviews"
+  ]
+}

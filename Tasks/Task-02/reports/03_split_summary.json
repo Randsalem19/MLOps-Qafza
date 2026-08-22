@@ -1,0 +1,29 @@
+[
+  {
+    "split": "train",
+    "rows": 67529,
+    "percentage": 70.0,
+    "start_date": "2016-09-15 12:16:38",
+    "end_date": "2018-04-15 20:12:35",
+    "late_orders": 6096,
+    "late_rate": 0.09027232744450532
+  },
+  {
+    "split": "validation",
+    "rows": 14470,
+    "percentage": 14.999481704156732,
+    "start_date": "2018-04-15 20:17:11",
+    "end_date": "2018-06-21 08:29:29",
+    "late_orders": 773,
+    "late_rate": 0.053420870767104355
+  },
+  {
+    "split": "test",
+    "rows": 14471,
+    "percentage": 15.000518295843268,
+    "start_date": "2018-06-21 08:41:07",
+    "end_date": "2018-08-29 15:00:37",
+    "late_orders": 957,
+    "late_rate": 0.06613226452905811
+  }
+]

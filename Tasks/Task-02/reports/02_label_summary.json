@@ -1,0 +1,8 @@
+{
+  "artifact": "02_labeled_orders.parquet",
+  "rows": 96470,
+  "on_time": 88644,
+  "late": 7826,
+  "late_rate": 0.08112366538820359,
+  "imbalance_ratio_on_time_to_late": 11.326859187324304
+}

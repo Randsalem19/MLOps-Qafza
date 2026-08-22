@@ -1,0 +1,28 @@
+{
+  "primary_metric": "PR-AUC",
+  "best_C": 0.01,
+  "selected_threshold": 0.67,
+  "test_touched_once": true,
+  "test_results": [
+    {
+      "model": "Dummy most-frequent",
+      "accuracy": 0.9338677354709419,
+      "balanced_accuracy": 0.5,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "pr_auc": 0.06613226452905811,
+      "roc_auc": 0.5
+    },
+    {
+      "model": "Class-weighted logistic regression",
+      "accuracy": 0.7727869532167784,
+      "balanced_accuracy": 0.5613381857647064,
+      "precision": 0.10343654304185097,
+      "recall": 0.3176593521421108,
+      "f1": 0.15605749486652978,
+      "pr_auc": 0.12084386762284294,
+      "roc_auc": 0.6827044487631465
+    }
+  ]
+}

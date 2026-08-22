@@ -1,0 +1,5 @@
+column,cardinality,missing_pct,rare_values_under_20_rows,most_common
+customer_state,27,0.0,0,SP
+primary_seller_state,22,0.0,5,SP
+primary_category,71,1.7784951650402048,8,bed_bath_table
+dominant_payment_type,4,0.0014808452664781056,0,credit_card
