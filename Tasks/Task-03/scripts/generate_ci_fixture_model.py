@@ -70,12 +70,7 @@ def main() -> None:
 
     rng = np.random.default_rng(7)
     n = 150
-    frame = pd.DataFrame(
-        {
-            c: rng.normal(20, 5, n).clip(min=0)
-            for c in NUMERIC_FEATURES + DERIVED_NUMERIC
-        }
-    )
+    frame = pd.DataFrame({c: rng.normal(20, 5, n).clip(min=0) for c in NUMERIC_FEATURES + DERIVED_NUMERIC})
     frame["customer_state"] = rng.choice(["SP", "RJ", "MG"], n)
     frame["primary_seller_state"] = rng.choice(["SP", "RJ", "MG"], n)
     frame["primary_category"] = rng.choice(["bed_bath_table", "electronics", "toys"], n)
@@ -116,9 +111,7 @@ def main() -> None:
     joblib.dump(preprocessor, models_dir / "05_preprocessor.joblib")
     joblib.dump(model, models_dir / "06_logistic_regression.joblib")
     feature_names = preprocessor.get_feature_names_out().tolist()
-    (models_dir / "05_feature_names.json").write_text(
-        json.dumps(feature_names), encoding="utf-8"
-    )
+    (models_dir / "05_feature_names.json").write_text(json.dumps(feature_names), encoding="utf-8")
     (models_dir / "06_results_summary.json").write_text(
         json.dumps(
             {
