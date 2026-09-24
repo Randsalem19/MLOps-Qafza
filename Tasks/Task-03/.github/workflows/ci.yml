@@ -33,7 +33,7 @@ jobs:
         run: pytest tests/ -v --cov=src/inference_service --cov-report=term-missing
 
       # A failing test or lint step above stops the pipeline here —
-      # the build/push job below only runs if this job succeeds.
+      # the jobs below only run if this job succeeds.
 
   build-image:
     needs: lint-and-test
@@ -57,3 +57,65 @@ jobs:
       # To actually push to a registry, add a docker/login-action step with
       # registry credentials in repo secrets, then set push: true above and
       # tag with your registry, e.g. ghcr.io/<owner>/order-delivery-inference.
+
+  compose-smoke-test:
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # The real Task-02 model artifacts are gitignored (too large to
+      # commit), so this generates a small synthetic model with the exact
+      # same schema purely so the compose stack has something to load. This
+      # is only for proving the stack comes up end to end — it never touches
+      # what real users would run.
+      - name: Generate a fixture model for the smoke test
+        run: |
+          pip install scikit-learn==1.5.1 joblib pandas numpy
+          python scripts/generate_ci_fixture_model.py
+
+      - name: Bring up the full stack with one command
+        run: docker compose up -d --build
+
+      - name: Wait for the API to become healthy
+        run: |
+          for i in $(seq 1 40); do
+            if curl -s http://localhost:8000/health | grep -Eq '"status":[[:space:]]*"ok"'; then
+              echo "API is up and the model loaded"
+              exit 0
+            fi
+            echo "Waiting for API... ($i/40)"
+            sleep 5
+          done
+          echo "API never became healthy"
+          docker compose logs
+          exit 1
+
+      - name: Send a real prediction request
+        run: |
+          curl -sf -X POST http://localhost:8000/predict \
+            -H "Content-Type: application/json" \
+            -d '{
+              "order_id": "ci-smoke-test",
+              "order_purchase_timestamp": "2018-05-14T10:32:00",
+              "order_estimated_delivery_date": "2018-05-29T00:00:00",
+              "customer_zip_code_prefix": 14409, "item_count": 1, "product_count": 1, "seller_count": 1,
+              "price_total": 89.9, "price_mean": 89.9, "freight_total": 16.11, "freight_mean": 16.11,
+              "product_weight_mean": 700.0, "product_length_mean": 25.0, "product_height_mean": 13.0,
+              "product_width_mean": 20.0, "product_photos_mean": 2.0, "seller_lat_mean": -23.55,
+              "seller_lng_mean": -46.63, "seller_state_nunique": 1, "payment_count": 1,
+              "payment_value_total": 106.01, "payment_installments_max": 2, "payment_type_count": 1,
+              "customer_lat": -21.17, "customer_lng": -47.81, "customer_seller_distance_km": 248.5,
+              "customer_state": "SP", "primary_seller_state": "SP",
+              "primary_category": "bed_bath_table", "dominant_payment_type": "credit_card"
+            }' | tee /dev/stderr | grep -Eq '"prediction":[[:space:]]*"'
+
+      - name: Tear down the stack
+        if: always()
+        run: docker compose down -v
