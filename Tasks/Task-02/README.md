@@ -102,16 +102,19 @@ This model is deliberately interpretable and reproducible. The task asks for a f
 
 ## Completion Checklist
 
-- [ ] Notebook 1 runs from PostgreSQL and saves one row per order.
-- [ ] Notebook 2 validates real label examples and saves the labeled table.
-- [ ] Notebook 3 saves non-overlapping chronological splits.
-- [ ] Notebook 4 reads training data only and saves charts/findings.
-- [ ] Notebook 5 fits transformations on train only and saves every fitted object.
-- [ ] Notebook 6 compares against a baseline and evaluates test once.
-- [ ] All notebooks run in order from a clean environment.
-- [ ] Screenshots/results are added after local execution.
+- [x] Notebook 1 runs from PostgreSQL and saves one row per order.
+- [x] Notebook 2 validates real label examples and saves the labeled table.
+- [x] Notebook 3 saves non-overlapping chronological splits.
+- [x] Notebook 4 reads training data only and saves charts/findings.
+- [x] Notebook 5 fits transformations on train only and saves every fitted object.
+- [x] Notebook 6 compares against a baseline and evaluates test once.
+- [x] All notebooks run in order from a clean environment.
+- [x] Screenshots/results are added after local execution.
+
+## Result
+
+Task 2 was completed successfully. The pipeline produced a leakage-safe, chronologically split dataset and a tuned, one-time-evaluated logistic regression model that clearly outperforms the dummy baseline on PR-AUC. Full results are in `reports/06_results_summary.json` and `figures/06_test_confusion_matrix.png`.
 
 ## GitHub Note
 
 Large generated artifacts are ignored by Git. Code, notebooks, reports, and figures remain trackable. Do not upload database passwords or the raw Olist dataset.
-
