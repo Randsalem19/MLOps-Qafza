@@ -29,7 +29,7 @@ The scholarship follows a 12‑week roadmap plus a final capstone. Progress is t
 | Week | Phase | Topic | Core Tools | Status |
 |---|---|---|---|---|
 | 1 | Local Foundations | Leakage‑proof ML Pipeline | Python, Scikit-learn | ✅ Completed — [Task 01](Tasks/Task-01) · [Task 02](Tasks/Task-02) |
-| 2 | Local Foundations | Deep Learning Pipeline | PyTorch, Hugging Face | ⬜ Upcoming |
+| 2 | Local Foundations | Deep Learning Pipeline | PyTorch, Hugging Face | ✅ Completed |
 | 3 | Production APIs | Production API | FastAPI, Pydantic | ✅ Completed — [Task 03](Tasks/Task-03) |
 | 4 | Containerization | Docker | Docker Engine | ✅ Completed — [Task 03](Tasks/Task-03) |
 | 5 | Data Pipelines | ETL Pipeline | Python ETL, Database | ⬜ Upcoming |
