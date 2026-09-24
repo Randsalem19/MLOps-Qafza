@@ -187,8 +187,8 @@ def _isolated_project(project_root, monkeypatch):
     from inference_service import config as config_module
     from inference_service import model_loader as model_loader_module
 
-    config_module.get_config.cache_clear()
-    config_module.get_expectations.cache_clear()
+    config_module._load_config_from_path.cache_clear()
+    config_module._load_expectations_from_path.cache_clear()
     model_loader_module._CACHED_MODEL = None
     yield
     model_loader_module._CACHED_MODEL = None
