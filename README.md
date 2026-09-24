@@ -24,14 +24,14 @@ Scholarship Program: Qafza Tech, MLOps Engineering Track
 
 ## Program Roadmap
 
-The scholarship follows a 12‑week roadmap plus a final capstone. Progress is tracked below as each week's task is completed.
+The scholarship follows a 12‑week roadmap plus a final capstone. Progress is tracked below as each week's task is completed. The actual assignments in this repo are numbered sequentially (Task 01, 02, 03…) and don't always map one‑to‑one onto a single week below — Task 03, for example, combines the Production API and Docker weeks into one deliverable.
 
 | Week | Phase | Topic | Core Tools | Status |
 |---|---|---|---|---|
 | 1 | Local Foundations | Leakage‑proof ML Pipeline | Python, Scikit-learn | ✅ Completed — [Task 01](Tasks/Task-01) · [Task 02](Tasks/Task-02) |
 | 2 | Local Foundations | Deep Learning Pipeline | PyTorch, Hugging Face | ⬜ Upcoming |
-| 3 | Production APIs | Production API | FastAPI, Pydantic | ⬜ Upcoming |
-| 4 | Containerization | Docker | Docker Engine | ⬜ Upcoming |
+| 3 | Production APIs | Production API | FastAPI, Pydantic | ✅ Completed — [Task 03](Tasks/Task-03) |
+| 4 | Containerization | Docker | Docker Engine | ✅ Completed — [Task 03](Tasks/Task-03) |
 | 5 | Data Pipelines | ETL Pipeline | Python ETL, Database | ⬜ Upcoming |
 | 6 | Data Versioning | Versioning | DVC | ⬜ Upcoming |
 | 7 | Experiment Tracking | MLflow | MLflow Registry | ⬜ Upcoming |
@@ -41,6 +41,8 @@ The scholarship follows a 12‑week roadmap plus a final capstone. Progress is t
 | 11 | Continuous Retraining | Automation | Ray Serve, GitHub Actions | ⬜ Upcoming |
 | 12 | Infrastructure as Code | Infrastructure | Terraform | ⬜ Upcoming |
 | Capstone | Capstone | End‑to‑End ML System | Complete Stack | ⬜ Upcoming |
+
+> Task 03 also introduced working, if introductory, versions of Data Versioning (DVC), Experiment Tracking (MLflow), and Monitoring (Prometheus metrics) ahead of their dedicated weeks — see the Task 03 write‑up below.
 
 ---
 
@@ -58,15 +60,27 @@ MLOps-Qafza/
 │   │   ├── sql/
 │   │   └── README.md
 │   │
-│   └── Task-02/                     # End-to-end ML notebook pipeline
-│       ├── artifacts/
-│       ├── figures/
-│       ├── notebooks/
-│       ├── reports/
-│       ├── .env.example
+│   ├── Task-02/                     # End-to-end ML notebook pipeline
+│   │   ├── artifacts/
+│   │   ├── figures/
+│   │   ├── notebooks/
+│   │   ├── reports/
+│   │   ├── .env.example
+│   │   ├── requirements.txt
+│   │   └── README.md
+│   │
+│   └── Task-03/                     # Notebooks-to-production inference service
+│       ├── app/                     # FastAPI application
+│       ├── src/inference_service/   # config, features, validation, model loading, prediction
+│       ├── config/                  # config.yaml + expectations.json
+│       ├── scripts/                 # MLflow registration, CI fixture model
+│       ├── tests/                   # unit, data, model, integration tests
+│       ├── Dockerfile
+│       ├── docker-compose.yml
 │       ├── requirements.txt
 │       └── README.md
 │
+├── .github/workflows/ci.yml         # lint, tests, Docker build, docker-compose smoke test
 ├── .gitignore
 └── README.md
 ```
@@ -107,11 +121,28 @@ Key design decisions: one row per order (item/payment tables pre‑aggregated), 
 
 📄 Full details: [Tasks/Task-02/README.md](Tasks/Task-02/README.md)
 
+### Task 03 — From Notebooks to Production
+
+Turned Task 02's notebook pipeline into a real inference service: a config‑driven repository, an inference pipeline that loads the fitted preprocessor and model (never re‑fits them), input validation, structured logging, a tested FastAPI service, Docker/Docker Compose, and a CI/CD pipeline — all built and verified end to end.
+
+| Component | What it does |
+|---|---|
+| `POST /predict` · `/predict/batch` | Scores one or many orders; returns `late`/`on_time`, a probability, and the model version |
+| `GET /health` · `/model/info` | Liveness check and model metadata (version, threshold, feature count) |
+| `GET /metrics` | Prometheus counters/histograms — request count, prediction latency, validation failures |
+| Validation | Fast pandas checks on every request, plus a full Great Expectations suite on batch requests — both generated from Task 02's own EDA statistics |
+| Model loading | Tries an MLflow Model Registry first, falls back to the local fitted artifacts — never re‑fits at inference time |
+| Testing | 26 unit, data, model, and integration tests (`pytest`), run against a synthetic fixture model so they never touch the real artifacts |
+| Docker | `docker compose up` brings up PostgreSQL, an MLflow tracking/registry server, and the API together with one command |
+| CI/CD | GitHub Actions lints, formats, tests, builds the Docker image, **and runs the full `docker compose` stack with a real `/predict` request** on every push — [see the workflow runs](../../actions) |
+
+📄 Full details: [Tasks/Task-03/README.md](Tasks/Task-03/README.md)
+
 ---
 
 ## Tech Stack
 
-`Python` `PostgreSQL` `pgAdmin` `Pandas` `Scikit-learn` `Jupyter` `Parquet`
+`Python` `PostgreSQL` `pgAdmin` `Pandas` `Scikit-learn` `Jupyter` `Parquet` `FastAPI` `Docker` `Docker Compose` `MLflow` `DVC` `Great Expectations` `pytest` `GitHub Actions` `Prometheus`
 
 ---
 
@@ -119,7 +150,8 @@ Key design decisions: one row per order (item/payment tables pre‑aggregated), 
 
 1. Start with [`Tasks/Task-01`](Tasks/Task-01) to see how the raw dataset was ingested and verified.
 2. Continue to [`Tasks/Task-02`](Tasks/Task-02) for the leakage‑safe ML pipeline, from raw tables to a trained, evaluated model.
-3. Each task folder has its own `README.md` with setup instructions, design rationale, and results.
+3. See [`Tasks/Task-03`](Tasks/Task-03) for the inference service that pipeline is deployed behind — a tested FastAPI app running in Docker, with CI/CD verifying the whole stack on every push.
+4. Each task folder has its own `README.md` with setup instructions, design rationale, and results.
 
 > Datasets, credentials (`.env`), and large generated artifacts are excluded from version control — see each task's `.gitignore` and `.env.example`.
 
