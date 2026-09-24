@@ -1,0 +1,73 @@
+services:
+  # Same Postgres the Task-01/Task-02 pipeline reads from. The API itself
+  # doesn't query it directly (Task 3 only serves the already-trained model),
+  # but it's part of "the stack" this compose file brings up together, and a
+  # future retraining job / feature pipeline reads from it.
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-olist}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-olist_password}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # A real artifact store + model registry the API container can reach over
+  # the network, instead of loading a joblib file that only exists on one
+  # laptop. Backed by sqlite for simplicity; swap --backend-store-uri for a
+  # real Postgres/MySQL URI in a production deployment.
+  mlflow:
+    image: python:3.12-slim
+    working_dir: /mlflow
+    command: >
+      bash -c "pip install --no-cache-dir mlflow==3.16.0 &&
+               mlflow server --host 0.0.0.0 --port 5000
+               --backend-store-uri sqlite:///mlflow/mlflow.db
+               --default-artifact-root /mlflow/artifacts"
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow_data:/mlflow
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      # Overrides config.yaml's model.mlflow.tracking_uri so the container
+      # talks to the mlflow service above instead of a local sqlite file.
+      MLFLOW_TRACKING_URI: "http://mlflow:5000"
+    volumes:
+      # Fallback artifacts only used if the registry has nothing registered
+      # yet (see model_loader.py) — lets the API start cleanly on first boot.
+      - ./models:/app/models:ro
+      - api_logs:/app/logs
+    depends_on:
+      mlflow:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  mlflow_data:
+  api_logs:

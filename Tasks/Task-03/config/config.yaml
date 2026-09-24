@@ -1,0 +1,94 @@
+# =============================================================================
+# Central configuration for the order-delivery inference service.
+# Nothing in the codebase should hardcode a path, feature name, or threshold —
+# everything comes from this file (see src/inference_service/config.py).
+# =============================================================================
+
+service:
+  name: "order-delivery-inference"
+  api_title: "Order Delivery Prediction API"
+  api_version: "1.0.0"
+  description: >
+    Predicts whether an Olist order will be delivered late or on time,
+    using the leakage-safe pipeline trained in Task 2.
+
+model:
+  name: "order-delivery-classifier"
+  # MLflow registry is the primary source. If it is unreachable (e.g. running
+  # the API without an MLflow server during local dev), the service falls
+  # back to loading the raw joblib artifacts copied from Task 2.
+  mlflow:
+    # sqlite backend, not the plain "file:./mlruns" store: MLflow's filesystem
+    # tracking store is in maintenance mode as of MLflow 3.x and the Model
+    # Registry needs a database-backed store anyway.
+    tracking_uri: "sqlite:///mlflow.db"
+    registry_alias: "production"     # what the task calls a "stage" is an alias in current MLflow
+  local_fallback:
+    preprocessor_path: "models/05_preprocessor.joblib"
+    model_path: "models/06_logistic_regression.joblib"
+    feature_names_path: "models/05_feature_names.json"
+    metadata_path: "models/06_results_summary.json"
+  # Used only if the registered/local metadata does not carry a threshold.
+  default_decision_threshold: 0.5
+
+features:
+  # Raw columns the API expects in a single order payload. purchase_month,
+  # purchase_day_of_week, purchase_hour, purchase_is_weekend and
+  # estimated_delivery_days are DERIVED internally from the two timestamp
+  # fields below (see src/inference_service/features.py) — never send them.
+  datetime_inputs:
+    - order_purchase_timestamp
+    - order_estimated_delivery_date
+
+  numeric:
+    - customer_zip_code_prefix
+    - item_count
+    - product_count
+    - seller_count
+    - price_total
+    - price_mean
+    - freight_total
+    - freight_mean
+    - product_weight_mean
+    - product_length_mean
+    - product_height_mean
+    - product_width_mean
+    - product_photos_mean
+    - seller_lat_mean
+    - seller_lng_mean
+    - seller_state_nunique
+    - payment_count
+    - payment_value_total
+    - payment_installments_max
+    - payment_type_count
+    - customer_lat
+    - customer_lng
+    - customer_seller_distance_km
+
+  derived_numeric:
+    - purchase_month
+    - purchase_day_of_week
+    - purchase_hour
+    - purchase_is_weekend
+    - estimated_delivery_days
+
+  categorical:
+    - customer_state
+    - primary_seller_state
+    - primary_category
+    - dominant_payment_type
+
+validation:
+  expectations_path: "config/expectations.json"
+  # What the service does when a row fails validation: reject | flag
+  on_failure: "reject"
+
+logging:
+  level: "INFO"
+  log_dir: "logs"
+  log_file: "service.log"
+  json_format: true
+
+monitoring:
+  prediction_log_path: "logs/predictions.jsonl"
+  metrics_route: "/metrics"

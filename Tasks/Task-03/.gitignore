@@ -1,0 +1,24 @@
+.env
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+
+# Model artifacts are versioned with DVC, not git (see models/models.dvc)
+models/*
+!models/.gitkeep
+!models/*.dvc
+
+# Runtime logs and local MLflow store — never committed
+logs/*
+!logs/.gitkeep
+mlruns/
+mlflow.db
+
+.ipynb_checkpoints/
+.DS_Store

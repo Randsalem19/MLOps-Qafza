@@ -1,0 +1,178 @@
+{
+  "not_null": [
+    "order_purchase_timestamp",
+    "order_estimated_delivery_date",
+    "customer_state",
+    "primary_seller_state",
+    "dominant_payment_type",
+    "item_count",
+    "product_count",
+    "seller_count",
+    "price_total",
+    "freight_total"
+  ],
+  "numeric_ranges": {
+    "item_count": {
+      "min": 0.0,
+      "max": 24.0
+    },
+    "product_count": {
+      "min": 0.1,
+      "max": 7.9
+    },
+    "seller_count": {
+      "min": 0.4,
+      "max": 5.6
+    },
+    "price_total": {
+      "min": 0.0,
+      "max": 15455.656
+    },
+    "price_mean": {
+      "min": 0.0,
+      "max": 7745.023
+    },
+    "freight_total": {
+      "min": 0.0,
+      "max": 1152.633
+    },
+    "freight_mean": {
+      "min": 0.0,
+      "max": 389.045
+    },
+    "product_weight_mean": {
+      "min": 0.0,
+      "max": 46488.45
+    },
+    "product_length_mean": {
+      "min": 0.0,
+      "max": 119.7
+    },
+    "product_height_mean": {
+      "min": 0.0,
+      "max": 120.45
+    },
+    "product_width_mean": {
+      "min": 0.0,
+      "max": 134.8
+    },
+    "product_photos_mean": {
+      "min": 0.0,
+      "max": 22.85
+    },
+    "seller_lat_mean": {
+      "min": -36.511,
+      "max": 1.937
+    },
+    "seller_lng_mean": {
+      "min": -68.249,
+      "max": -30.499
+    },
+    "seller_state_nunique": {
+      "min": 0.7,
+      "max": 3.3
+    },
+    "payment_count": {
+      "min": 0.0,
+      "max": 29.75
+    },
+    "payment_value_total": {
+      "min": 0.0,
+      "max": 15712.181
+    },
+    "payment_installments_max": {
+      "min": 0.0,
+      "max": 27.45
+    },
+    "payment_type_count": {
+      "min": 0.85,
+      "max": 2.15
+    },
+    "customer_lat": {
+      "min": -44.917,
+      "max": 52.372
+    },
+    "customer_lng": {
+      "min": -82.285,
+      "max": 1.036
+    },
+    "customer_seller_distance_km": {
+      "min": 0.0,
+      "max": 9237.882
+    },
+    "customer_zip_code_prefix": {
+      "min": 0,
+      "max": 99999
+    }
+  },
+  "categorical_sets": {
+    "customer_state": [
+      "AC",
+      "AL",
+      "AP",
+      "AM",
+      "BA",
+      "CE",
+      "DF",
+      "ES",
+      "GO",
+      "MA",
+      "MT",
+      "MS",
+      "MG",
+      "PA",
+      "PB",
+      "PR",
+      "PE",
+      "PI",
+      "RJ",
+      "RN",
+      "RS",
+      "RO",
+      "RR",
+      "SC",
+      "SP",
+      "SE",
+      "TO"
+    ],
+    "primary_seller_state": [
+      "AC",
+      "AL",
+      "AP",
+      "AM",
+      "BA",
+      "CE",
+      "DF",
+      "ES",
+      "GO",
+      "MA",
+      "MT",
+      "MS",
+      "MG",
+      "PA",
+      "PB",
+      "PR",
+      "PE",
+      "PI",
+      "RJ",
+      "RN",
+      "RS",
+      "RO",
+      "RR",
+      "SC",
+      "SP",
+      "SE",
+      "TO"
+    ],
+    "dominant_payment_type": [
+      "credit_card",
+      "boleto",
+      "voucher",
+      "debit_card"
+    ]
+  },
+  "not_blank": [
+    "primary_category"
+  ],
+  "source_note": "Numeric ranges derived from Tasks/Task-02/reports/04_numerical_summary.csv (min/max +/-15% padding). Regenerate with scripts/build_expectations.py if the training data changes."
+}
